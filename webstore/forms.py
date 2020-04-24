@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Email
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.fields.html5 import EmailField
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class OrderForm(FlaskForm):

@@ -1,3 +1,5 @@
+from hashlib import md5
+
 from flask import render_template, request, session, redirect
 from datetime import datetime, date, time
 from sqlalchemy.sql.expression import func
@@ -78,8 +80,10 @@ def route_login():
     if request.method == "POST" and form.validate():
         email = form.email.data
         pswd = form.pswd.data
+        hash_password = md5(pswd.encode())
+        password = hash_password.hexdigest()
         user_db = db.session.query(User).filter(User.email == email).first()
-        if user_db is not None and user_db.password == pswd:
+        if user_db is not None and user_db.password == password:
             session["user_id"] = user_db.id
             session["user_email"] = user_db.email
             session["is_auth"] = True
@@ -98,9 +102,11 @@ def route_register():
     if request.method == "POST" and form.validate():
         email = form.email.data
         pswd = form.pswd.data
+        hash_password = md5(pswd.encode())
+        password = hash_password.hexdigest()
         user_db = db.session.query(User).filter_by(email=email).first()
         if len(pswd) > 5 and user_db is None:
-            user = User(email=email, password=pswd)
+            user = User(email=email, password=password)
 
             db.session.add(user)
             db.session.commit()
