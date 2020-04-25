@@ -1,12 +1,16 @@
 from hashlib import md5
 
 from flask import render_template, request, session, redirect
-from datetime import datetime, date, time
+
 from sqlalchemy.sql.expression import func
+
+
+# from datetime import datetime, date, time
 
 from webstore import app, db
 from webstore.models import db, User, Meal, Category, Order
 from webstore.forms import OrderForm, RegisterForm, LoginForm
+
 
 
 @app.route('/')
@@ -38,7 +42,7 @@ def route_cart():
         adress = form.address.data
         email = form.email.data
         phone = form.phone.data
-        order = Order(data=datetime.now(), sum=cost, status=True, name=name, address=adress, email=email, phone=phone,
+        order = Order(data=func.now(), sum=cost, status=True, name=name, address=adress, email=email, phone=phone,
                       user_id=session.get("user_id", None))
         for meal in meals:
             order.meals.append(meal)
@@ -69,9 +73,10 @@ def route_account():
     if session.get("user_id") is not None:
         orders_user = db.session.query(Order).filter(Order.user_id == session.get("user_id")).\
                       order_by(Order.id.desc()).all()
-        return render_template('account.html', orders=orders_user, count=session.get("count", 0), cost=session.get("cost", 0))
+        return render_template('account.html', orders=orders_user, count=session.get("count", 0),
+                               cost=session.get("cost", 0))
     else:
-        return redirect('/')
+        return redirect('/login/')
 
 
 @app.route('/login/', methods=["GET", "POST"])

@@ -1,6 +1,8 @@
 import csv
 
-from flask import Flask
+from flask import Flask, request, session
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 from webstore.config import Config, current_path
 from webstore.models import db, User, Meal, Category, Order, meal_order_association
@@ -36,6 +38,14 @@ with app.app_context():
 
 
 from webstore.views import *
+
+
+admin = Admin(app)
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Meal, db.session))
+admin.add_view(ModelView(Category, db.session))
+admin.add_view(ModelView(Order, db.session))
+
 
 if __name__ == '__main__':
     app.run()
